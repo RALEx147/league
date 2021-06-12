@@ -14,14 +14,14 @@ def pretty(d, length):
         print(str(key)+space+str(value))
 
 
-def load_data(string, set_name):
+def load_data_old(string, set_name):
     Aram_Data = dill.load(open(string, "rb"))
     read_set = dill.load(open(set_name, "rb"))
     print("DATA LOADED",len(Aram_Data))
     return Aram_Data, read_set
 
 
-def fetch_new_data(read_set, data):
+def fetch_new_data_old(read_set, data):
     data_size = len(data)
     Aram_Data = data
 
@@ -37,6 +37,66 @@ def fetch_new_data(read_set, data):
 
 
     return Aram_Data
+
+def fetch_new_data(read, matches, name):
+    settings = {"logging": {"print_calls": False}}
+    cass.apply_settings(settings)
+    cass.set_riot_api_key("***REMOVED***")
+
+    summoner = cass.get_summoner(name=name, region="NA")
+    queue = [cass.Queue.aram]
+    Player = namedtuple('Player', ['name', 'champ'])
+    champion_id_to_name_mapping = {champion.id: champion.name for champion in cass.get_champions(region="NA")}
+    summonerspell_id_to_name_mapping = {spell.id: spell.name for spell in cass.get_summoner_spells(region="NA")}
+
+    print("Getting Match History")
+    match_history = cass.get_match_history(summoner=summoner, queues=queue)
+    print("Total Aram Games:", len(match_history))
+    match_history = list(filter(lambda x: x.id not in read, match_history))
+    print("Total Aram Games:", len(match_history))
+    print("Getting Game Data")
+
+    count = 0
+    for match in match_history:
+        if count % 100 == 0 and count > 0:
+            print(round(count * 100 / len(match_history)), '/ 100')
+            # dill.dump(matches, file = open("Aram_Data_Checkpoint.pickle", "wb"))
+            # dill.dump(read, file = open("Read_Checkpoint.pickle", "wb"))
+        blue = []
+        red = []
+        main_summoner = None
+        side = None
+
+        for i in match.participants:
+            if i.side.value == 100:
+                blue.append(Player(i.summoner.name, i.champion.name))
+            else:
+                red.append(Player(i.summoner.name, i.champion.name))
+
+            if i.summoner == summoner:
+                side = 0 if i.side.value == 100 else 1
+                champion = champion_id_to_name_mapping[i.champion.id]
+                summoner_spell_d = summonerspell_id_to_name_mapping[i.summoner_spell_d.id]
+                summoner_spell_f = summonerspell_id_to_name_mapping[i.summoner_spell_f.id]
+                runes = {r.name for r in i.runes}
+                try:
+                    stats = Stats(i.stats)
+                except:
+                    stats = i.stats
+                main_summoner = Summoner(summoner_spell_d, summoner_spell_f, runes, stats)
+
+        game = Match(match.duration, match.season, match.patch, match.id, blue, red, main_summoner, side)
+        matches.append(game)
+        read.add(match.id)
+        count += 1
+
+    print("DATA ADDED", count, '\n')
+
+    dill.dump(matches, file = open("Aram_Data.pickle", "wb"))
+    dill.dump(read, file = open("Read.pickle", "wb"))
+
+    return matches
+
 
 
 def win_rate(name, data):
