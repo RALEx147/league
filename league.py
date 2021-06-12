@@ -2,7 +2,7 @@ from league_data import *
 from league_functions import *
 from league_constants import *
 
-data = load_fetch_data(chris)
+data = load_fetch_data(thomas)
 
 # print(read_set)
 # win_rate(robb, Aram_Data)
