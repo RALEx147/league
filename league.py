@@ -2,7 +2,6 @@ from league_functions import *
 from league_constants import *
 
 
-
 try:
     Aram_Data, read_set = load_data(robb)
 except:
