@@ -14,8 +14,8 @@ def load_fetch_data(name):
     return _fetch_new_data(read_set, Aram_Data, name)
 
 def _load_data(name):
-    Aram_Data = dill.load(open("cache/data_"+ name.replace(" ", "_")+".pickle", "rb"))
-    read_set = dill.load(open("cache/read_"+ name.replace(" ", "_")+".pickle", "rb"))
+    Aram_Data = dill.load(open("cache/data_"+ name.lower().replace(" ", "_")+".pickle", "rb"))
+    read_set = dill.load(open("cache/read_"+ name.lower().replace(" ", "_")+".pickle", "rb"))
     print("DATA LOADED",len(Aram_Data))
     return Aram_Data, read_set
 
@@ -23,7 +23,7 @@ def _load_data(name):
 def _fetch_new_data(read, matches, name):
     last_updated = 0
     try:
-        last_updated = os.stat("cache/data_"+ name.replace(" ", "_")+".pickle").st_mtime
+        last_updated = os.stat("cache/data_"+ name.lower().replace(" ", "_")+".pickle").st_mtime
     except:
         pass
     if time.time() - last_updated > 3600:
@@ -77,8 +77,8 @@ def _fetch_new_data(read, matches, name):
 
         print("DATA ADDED", count, '\n')
 
-        dill.dump(matches, file = open("cache/data_"+ name.replace(" ", "_")+".pickle", "wb"))
-        dill.dump(read, file = open("cache/read_"+ name.replace(" ", "_")+".pickle", "wb"))
+        dill.dump(matches, file = open("cache/data_"+ name.lower().replace(" ", "_")+".pickle", "wb"))
+        dill.dump(read, file = open("cache/read_"+ name.lower().replace(" ", "_")+".pickle", "wb"))
     else:
         print("NO DATA ADDED\n")
     return matches

@@ -35,10 +35,18 @@ class Stats():
         self.double_kills = stats.double_kills
         self.first_blood_assist = stats.first_blood_assist
         self.first_blood_kill = stats.first_blood_kill
-        self.first_inhibitor_assist = stats.first_inhibitor_assist
-        self.first_inhibitor_kill = stats.first_inhibitor_kill
-        self.first_tower_assist = stats.first_tower_assist
-        self.first_tower_kill = stats.first_tower_kill
+        try:
+            self.first_inhibitor_assist = stats.first_inhibitor_assist
+            self.first_inhibitor_kill = stats.first_inhibitor_kill
+        except:
+            self.first_inhibitor_assist = None
+            self.first_inhibitor_kill = None
+        try:
+            self.first_tower_assist = stats.first_tower_assist
+            self.first_tower_kill = stats.first_tower_kill
+        except:
+            self.first_tower_assist = None
+            self.first_tower_kill = None
         self.gold_earned = stats.gold_earned
         self.gold_spent = stats.gold_spent
         self.inhibitor_kills = stats.inhibitor_kills
@@ -75,35 +83,3 @@ class Stats():
         self.true_damage_taken = stats.true_damage_taken
         self.turret_kills = stats.turret_kills
         self.win = stats.win
-
-
-class Game():
-    win = 0
-    time = 0
-    champion = ""
-    multikill = ""
-    maxlevel = 0
-    cs = 0
-    cspermin = 0
-    kp = 0
-    kda = 0
-    team_names = []
-    teamcomp = []
-    items = []
-
-    def __init__(self, win, time, champion, multikill, maxlevel, cs, cspermin, kp, team_names, kda, teamcomp, items):
-        self.win = win
-        self.time = time
-        self.champion = champion
-        self.multikill = multikill
-        self.maxlevel = maxlevel
-        self.cs = cs
-        self.cspermin = cspermin
-        self.kp = kp
-        self.team_names = team_names
-        self.kda = kda
-        self.teamcomp = teamcomp
-        self.items = items
-
-    def __str__(self):
-         return "win: " + str(self.win)  + "\ntime: " + str(self.time)  + "\nchampion: " + str(self.champion)  + "\nmultikill: " + str(self.multikill)  + "\nmaxlevel: " + str(self.maxlevel)  + "\ncs: " + str(self.cs)  + "\ncspermin: " + str(self.cspermin)  + "\nkp: " + str(self.kp)  + "\nkda: " + str(self.kda)  + "\nteam_names: " + str(self.team_names)  + "\nteamcomp: " + str(self.teamcomp) + "\n" + str(self.items) + "\n"
