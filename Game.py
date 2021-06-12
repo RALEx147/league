@@ -13,11 +13,12 @@ class Match():
         return f'duration: {self.duration}\nseason: {self.season}\npatch: {self.patch}\nid: {self.id}\nblue: {self.blue}\nred: {self.red}\nside: {self.side}\nsummoner: \n{self.summoner}\n'
 
 class Summoner():
-    def __init__(self, summoner_spell_d, summoner_spell_f, runes, stats):
+    def __init__(self, summoner_spell_d, summoner_spell_f, runes, stats, champion):
         self.summoner_spell_d = summoner_spell_d
         self.summoner_spell_f = summoner_spell_f
         self.runes = runes
         self.stats = stats
+        self.champion = champion
 
 
     def __str__(self):
