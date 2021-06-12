@@ -27,8 +27,7 @@ def _fetch_new_data(read, matches, name):
     except:
         pass
     if time.time() - last_updated > 3600:
-        settings = {"logging": {"print_calls": False}}
-        cass.apply_settings(settings)
+        cass.apply_settings({"logging": {"print_calls": False}})
         cass.set_riot_api_key("***REMOVED***")
 
         summoner = cass.get_summoner(name=name, region="NA")
