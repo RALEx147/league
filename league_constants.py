@@ -1,0 +1,12 @@
+adcs = set(["Aphelios","Ashe","Caitlyn","Corki","Draven","Ezreal","Jhin","Jinx","Kai'Sa","Kalista","Kindred","Kog'Maw","Lucian","Miss Fortune","Senna","Sivir","Tristana","Twitch","Varus","Vayne","Xayah"])
+
+champs = {'Aatrox': 0, 'Ahri': 1, 'Akali': 2, 'Alistar': 3, 'Amumu': 4, 'Anivia': 5, 'Annie': 6, 'Aphelios': 7, 'Ashe': 8, 'Aurelion Sol': 9, 'Azir': 10, 'Bard': 11, 'Blitzcrank': 12, 'Brand': 13, 'Braum': 14, 'Caitlyn': 15, 'Camille': 16, 'Cassiopeia': 17, "Cho'Gath": 18, 'Corki': 19, 'Darius': 20, 'Diana': 21, 'Dr. Mundo': 22, 'Draven': 23, 'Ekko': 24, 'Elise': 25, 'Evelynn': 26, 'Ezreal': 27, 'Fiddlesticks': 28, 'Fiora': 29, 'Fizz': 30, 'Galio': 31, 'Gangplank': 32, 'Garen': 33, 'Gnar': 34, 'Gragas': 35, 'Graves': 36, 'Hecarim': 37, 'Heimerdinger': 38, 'Illaoi': 39, 'Irelia': 40, 'Ivern': 41, 'Janna': 42, 'Jarvan IV': 43, 'Jax': 44, 'Jayce': 45, 'Jhin': 46, 'Jinx': 47, "Kai'Sa": 48, 'Kalista': 49, 'Karma': 50, 'Karthus': 51, 'Kassadin': 52, 'Katarina': 53, 'Kayle': 54, 'Kayn': 55, 'Kennen': 56, "Kha'Zix": 57, 'Kindred': 58, 'Kled': 59, "Kog'Maw": 60, 'LeBlanc': 61, 'Lee Sin': 62, 'Leona': 63, 'Lillia': 64, 'Lissandra': 65, 'Lucian': 66, 'Lulu': 67, 'Lux': 68, 'Malphite': 69, 'Malzahar': 70, 'Maokai': 71, 'Master Yi': 72, 'Miss Fortune': 73, 'Mordekaiser': 74, 'Morgana': 75, 'Nami': 76, 'Nasus': 77, 'Nautilus': 78, 'Neeko': 79, 'Nidalee': 80, 'Nocturne': 81, 'Nunu &amp; Willump': 82, 'Olaf': 83, 'Orianna': 84, 'Ornn': 85, 'Pantheon': 86, 'Poppy': 87, 'Pyke': 88, 'Qiyana': 89, 'Quinn': 90, 'Rakan': 91, 'Rammus': 92, "Rek'Sai": 93, 'Renekton': 94, 'Rengar': 95, 'Riven': 96, 'Rumble': 97, 'Ryze': 98, 'Samira': 99, 'Sejuani': 100, 'Senna': 101, 'Seraphine': 102, 'Sett': 103, 'Shaco': 104, 'Shen': 105, 'Shyvana': 106, 'Singed': 107, 'Sion': 108, 'Sivir': 109, 'Skarner': 110, 'Sona': 111, 'Soraka': 112, 'Swain': 113, 'Sylas': 114, 'Syndra': 115, 'Tahm Kench': 116, 'Taliyah': 117, 'Talon': 118, 'Taric': 119, 'Teemo': 120, 'Thresh': 121, 'Tristana': 122, 'Trundle': 123, 'Tryndamere': 124, 'Twisted Fate': 125, 'Twitch': 126, 'Udyr': 127, 'Urgot': 128, 'Varus': 129, 'Vayne': 130, 'Veigar': 131, "Vel'Koz": 132, 'Vi': 133, 'Viktor': 134, 'Vladimir': 135, 'Volibear': 136, 'Warwick': 137, 'Wukong': 138, 'Xayah': 139, 'Xerath': 140, 'Xin Zhao': 141, 'Yasuo': 142, 'Yone': 143, 'Yorick': 144, 'Yuumi': 145, 'Zac': 146, 'Zed': 147, 'Ziggs': 148, 'Zilean': 149, 'Zoe': 150, 'Zyra': 151}
+
+
+robb = "Dirty Doughnut"
+thomas = "Evian Ice"
+adrian = "Milo Dinosaur"
+danial = "Rdinho9"
+JJ = "diehardorgohome"
+nick = "Mizero1"
+chris = "Big Benis Boy"
