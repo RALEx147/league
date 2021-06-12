@@ -4,11 +4,13 @@ from league_constants import *
 
 
 try:
-    Aram_Data, read_set = load_data_old("Aram_Data_OLD2.pickle", "read_set.pickle")
+    Aram_Data, read_set = load_data(robb)
 except:
     Aram_Data, read_set = [], set()
 
-Aram_Data = fetch_new_data_old(read_set, Aram_Data)
+Aram_Data = fetch_new_data(read_set, Aram_Data, robb)
+
+
 
 # print(read_set)
 # win_rate(robb, Aram_Data)
