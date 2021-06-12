@@ -3,7 +3,7 @@ import time
 from collections import defaultdict, namedtuple
 import dill
 import numpy
-from league_constants import adcs
+# from league_constants import adcs
 from Game import Match, Summoner, Stats
 import cassiopeia as cass
 
@@ -13,9 +13,17 @@ def pretty(d, length):
         space = " " * (length - len(key))
         print(str(key)+space+str(value))
 
+def load_fetch_data(name):
+    try:
+        Aram_Data, read_set = load_data(name)
+    except:
+        Aram_Data, read_set = [], set()
+
+    return fetch_new_data(read_set, Aram_Data, name)
+
 def load_data(name):
-    Aram_Data = dill.load(open("data_"+ name.lower().replace(" ", "_")+".pickle", "rb"))
-    read_set = dill.load(open("read_"+ name.lower().replace(" ", "_")+".pickle", "rb"))
+    Aram_Data = dill.load(open("cache/data_"+ name.replace(" ", "_")+".pickle", "rb"))
+    read_set = dill.load(open("cache/read_"+ name.replace(" ", "_")+".pickle", "rb"))
     print("DATA LOADED",len(Aram_Data))
     return Aram_Data, read_set
 
@@ -23,7 +31,7 @@ def load_data(name):
 def fetch_new_data(read, matches, name):
     last_updated = 0
     try:
-        last_updated = os.stat("data_"+ name.replace(" ", "_")+".pickle").st_mtime
+        last_updated = os.stat("cache/data_"+ name.replace(" ", "_")+".pickle").st_mtime
     except:
         pass
     if time.time() - last_updated > 3600:
@@ -48,8 +56,6 @@ def fetch_new_data(read, matches, name):
         for match in match_history:
             if count % 100 == 0 and count > 0:
                 print(round(count * 100 / len(match_history)), '/ 100')
-                # dill.dump(matches, file = open("Aram_Data_Checkpoint.pickle", "wb"))
-                # dill.dump(read, file = open("Read_Checkpoint.pickle", "wb"))
             blue = []
             red = []
             main_summoner = None
@@ -80,8 +86,8 @@ def fetch_new_data(read, matches, name):
 
         print("DATA ADDED", count, '\n')
 
-        dill.dump(matches, file = open("data_"+ name.replace(" ", "_")+".pickle", "wb"))
-        dill.dump(read, file = open("read_"+ name.replace(" ", "_")+".pickle", "wb"))
+        dill.dump(matches, file = open("cache/data_"+ name.replace(" ", "_")+".pickle", "wb"))
+        dill.dump(read, file = open("cache/read_"+ name.replace(" ", "_")+".pickle", "wb"))
     else:
         print("NO DATA ADDED\n")
     return matches

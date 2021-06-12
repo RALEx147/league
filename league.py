@@ -1,13 +1,9 @@
 from league_functions import *
 from league_constants import *
 
+data = load_fetch_data(chris)
 
-try:
-    Aram_Data, read_set = load_data(robb)
-except:
-    Aram_Data, read_set = [], set()
-
-Aram_Data = fetch_new_data(read_set, Aram_Data, robb)
+# Aram_Data = fetch_new_data(read_set, Aram_Data, robb)
 
 
 
