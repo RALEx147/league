@@ -5,6 +5,8 @@ import dill
 from Game import Match, Summoner, Stats
 import cassiopeia as cass
 
+import credential
+
 def load_fetch_data(name):
     try:
         Aram_Data, read_set = _load_data(name)
@@ -26,9 +28,9 @@ def _fetch_new_data(read, matches, name):
         last_updated = os.stat("cache/data_"+ name.lower().replace(" ", "_")+".pickle").st_mtime
     except:
         pass
-    if time.time() - last_updated > 3600:
+    if time.time() - last_updated > 10000:
         cass.apply_settings({"logging": {"print_calls": False}})
-        cass.set_riot_api_key("RGAPI-3185ef75-8b98-47f9-9b02-e79cab9f6e74")
+        cass.set_riot_api_key(credential.get_key())
 
         summoner = cass.get_summoner(name=name, region="NA")
 

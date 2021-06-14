@@ -2,11 +2,12 @@ from league_data import *
 from league_functions import *
 from league_constants import *
 
-data = load_fetch_data(thomas)
+data = load_fetch_data(chris)
+
 
 # print(read_set)
-# win_rate(robb, Aram_Data)
-# champ_winrate(robb, Aram_Data)
+win_rate(data)
+# champ_winrate(data)
 # champ_kda(robb, Aram_Data)
 # kda(Aram_Data)
 # kp(Aram_Data)
@@ -16,7 +17,7 @@ data = load_fetch_data(thomas)
 # adc_winrate(Aram_Data)
 # time_played(Aram_Data)
 # win_rate_with(thomas, Aram_Data)
-# time_distribution(robb, Aram_Data)
+# time_distribution(robb, data)
 
 
 # a  = dill.load(open("Aram_Data_New.pickle", "rb"))

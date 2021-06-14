@@ -1,16 +1,39 @@
 from collections import defaultdict
 import numpy as np
 
-def pretty(d, length):
-    for key, value in d:
+def pretty(d, length, addendum=None):
+    for _, (key, value) in enumerate(d):
         space = " " * (length - len(key))
-        print(str(key)+space+str(value))
+        if addendum:
+            print(key, space, value, addendum[key])
+        else:
+            print(key, space, value)
 
 
+def percent(wins, losses):
+    return round(100*wins/(wins+losses), 2)
 
 
-# def win_rate(name, data):
-# def champ_winrate(name, data):
+def win_rate(data):
+    d = defaultdict(int)
+    for i in data:
+        d[i.summoner.stats.win] += 1
+    wins = d[True]
+    losses = d[False]
+    print(f'Wins: {wins}\nLosses: {losses}\n{percent(wins, losses)}%')
+
+
+def champ_winrate(data):
+    d = defaultdict(lambda : [0,0])
+    percentages = {}
+    for i in data:
+        d[i.summoner.champion][0] += 1 if i.summoner.stats.win else 0
+        d[i.summoner.champion][1] += 0 if i.summoner.stats.win else 1
+    for key in d.keys():
+        percentages[key] = str(percent(d[key][0], d[key][1])) + "%"
+
+    pretty(sorted(d.items(), key=lambda item: item[1][0]+item[1][1], reverse=True), 15, addendum=percentages)
+
 # def champ_kda(name, data):
 # def kda(data):
 # def kp(data):
