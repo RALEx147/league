@@ -12,6 +12,10 @@ class Match():
     def __str__(self):
         return f'duration: {self.duration}\nseason: {self.season}\npatch: {self.patch}\nid: {self.id}\nblue: {self.blue}\nred: {self.red}\nside: {self.side}\nsummoner: \n{self.summoner}\n'
 
+    def winning_side(self):
+        return self.side if self.summoner.stats.win else not self.side
+
+
 class Summoner():
     def __init__(self, summoner_spell_d, summoner_spell_f, runes, stats, champion):
         self.summoner_spell_d = summoner_spell_d
