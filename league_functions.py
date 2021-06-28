@@ -1,5 +1,6 @@
 from collections import defaultdict
 import numpy as np
+from league_constants import adcs
 
 def pretty(d, length, addendum=None):
     for _, (key, value) in enumerate(d):
@@ -11,6 +12,8 @@ def pretty(d, length, addendum=None):
 
 
 def percent(wins, losses):
+    if (wins + losses) == 0:
+        return -1
     return round(100*wins/(wins+losses), 2)
 
 
@@ -21,7 +24,7 @@ def win_rate(data):
     wins = d[True]
     losses = d[False]
     print(f'Wins: {wins}\nLosses: {losses}\n{percent(wins, losses)}%')
-
+    return wins, losses
 
 def champ_winrate(data):
     d = defaultdict(lambda : [0,0])
@@ -40,7 +43,31 @@ def champ_winrate(data):
 # def common_teammates(data, lookup=None):
 # def multikills(data):
 # def items(data):
-# def adc_winrate(data):
+def adc_winrate(data):
+    with_adc_wins = 0
+    with_adc_losses = 0
+    no_adc_wins = 0
+    no_adc_losses = 0
+    for i in data:
+        blue = {i.champ for i in i.blue}
+        red = {i.champ for i in i.red}
+        personal = red if i.side else blue
+        other = blue if i.side else red
+
+        win = i.winning_side()
+        if adcs&personal and not adcs&other:
+            if win == i.side:
+                with_adc_wins += 1
+            else:
+                with_adc_losses += 1
+        if not adcs&personal and adcs&other:
+            if win == i.side:
+                no_adc_wins += 1
+            else:
+                no_adc_losses += 1
+
+    print(f'With adc winrate: {percent(with_adc_wins, with_adc_losses)}%\nNo adc winrate: {percent(no_adc_wins, no_adc_losses)}%\n')
+
 # def time_played(data):
 # def win_rate_with(name, data):
 def time_distribution(name, data):
