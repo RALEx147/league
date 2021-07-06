@@ -12,6 +12,18 @@ class Match():
     def __str__(self):
         return f'duration: {self.duration}\nseason: {self.season}\npatch: {self.patch}\nid: {self.id}\nblue: {self.blue}\nred: {self.red}\nside: {self.side}\nsummoner: \n{self.summoner}\n'
 
+    def to_dict(self):
+        return {
+            'duration' : self.duration,
+            'season' : self.season,
+            'patch' : self.patch,
+            'id' : self.id,
+            'blue' : self.blue,
+            'red' : self.red,
+            'summoner' : self.summoner,
+            'side' : self.side
+        }
+
     def winning_side(self):
         return self.side if self.summoner.stats.win else not self.side
 
@@ -26,6 +38,9 @@ class Summoner():
 
 
     def __str__(self):
+        return f'\tsummoner_spell_d: {self.summoner_spell_d}\n\tsummoner_spell_f: {self.summoner_spell_f}\n\trunes: {self.runes}\n\tstats: {self.stats}\n'
+
+    def __repr__(self):
         return f'\tsummoner_spell_d: {self.summoner_spell_d}\n\tsummoner_spell_f: {self.summoner_spell_f}\n\trunes: {self.runes}\n\tstats: {self.stats}\n'
 
 class Stats():

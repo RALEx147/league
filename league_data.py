@@ -4,8 +4,14 @@ from collections import namedtuple
 import dill
 from Game import Match, Summoner, Stats
 import cassiopeia as cass
-
+import pandas as pd
 import credential
+
+def filter_data(data):
+    return data
+
+def convert_df(data):
+    return pd.DataFrame([vars(d) for d in data])
 
 def load_fetch_data(name):
     try:
