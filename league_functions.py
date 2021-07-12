@@ -4,8 +4,12 @@ from league_constants import adcs
 
 
 def wr(dataframe):
-    return dataframe.win.value_counts(normalize=True).sort_index(ascending=False).rename(
+    wr = dataframe.win.value_counts(normalize=True).sort_index(ascending=False).rename(
         {True: "Win", False: "Loss"}).mul(100).round(1).astype(str) + '%'
+    wr["Win"] = wr["Win"] + " " + str(dataframe.win.value_counts().sort_index(ascending=False)[True])
+    wr["Loss"] = wr["Loss"] + " " + str(dataframe.win.value_counts().sort_index(ascending=False)[False])
+    return wr
+
 
 
 def pretty(d, length, addendum=None):
