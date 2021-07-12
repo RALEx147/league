@@ -7,31 +7,35 @@ import cassiopeia as cass
 import pandas as pd
 import credential
 
+
 def filter_data(data):
     return data
+
 
 def convert_df(data):
     return pd.DataFrame([vars(d) for d in data])
 
+
 def load_fetch_data(name):
     try:
-        Aram_Data, read_set = _load_data(name)
+        aram_data, read_set = _load_data(name)
     except:
-        Aram_Data, read_set = [], set()
+        aram_data, read_set = [], set()
 
-    return _fetch_new_data(read_set, Aram_Data, name)
+    return _fetch_new_data(read_set, aram_data, name)
+
 
 def _load_data(name):
-    Aram_Data = dill.load(open("cache/data_"+ name.lower().replace(" ", "_")+".pickle", "rb"))
-    read_set = dill.load(open("cache/read_"+ name.lower().replace(" ", "_")+".pickle", "rb"))
-    print("DATA LOADED",len(Aram_Data))
-    return Aram_Data, read_set
+    aram_data = dill.load(open("cache/data_" + name.lower().replace(" ", "_") + ".pickle", "rb"))
+    read_set = dill.load(open("cache/read_" + name.lower().replace(" ", "_") + ".pickle", "rb"))
+    print("DATA LOADED", len(aram_data))
+    return aram_data, read_set
 
 
 def _fetch_new_data(read, matches, name):
     last_updated = 0
     try:
-        last_updated = os.stat("cache/data_"+ name.lower().replace(" ", "_")+".pickle").st_mtime
+        last_updated = os.stat("cache/data_" + name.lower().replace(" ", "_") + ".pickle").st_mtime
     except:
         pass
     if time.time() - last_updated > 10000:
@@ -85,8 +89,8 @@ def _fetch_new_data(read, matches, name):
 
         print("DATA ADDED", count, '\n')
 
-        dill.dump(matches, file = open("cache/data_"+ name.lower().replace(" ", "_")+".pickle", "wb"))
-        dill.dump(read, file = open("cache/read_"+ name.lower().replace(" ", "_")+".pickle", "wb"))
+        dill.dump(matches, file=open("cache/data_" + name.lower().replace(" ", "_") + ".pickle", "wb"))
+        dill.dump(read, file=open("cache/read_" + name.lower().replace(" ", "_") + ".pickle", "wb"))
     else:
         print("NO DATA ADDED\n")
     return matches

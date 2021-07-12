@@ -7,3 +7,7 @@ danial = "Rdinho9"
 JJ = "diehardorgohome"
 nick = "Mizero1"
 chris = "Big Benis Boy"
+aleks = "Dodge Down"
+zeb = "Derroz"
+
+friends = {thomas, adrian, danial, JJ, nick, chris, aleks, zeb }

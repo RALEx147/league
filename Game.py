@@ -1,4 +1,4 @@
-class Match():
+class Match:
     def __init__(self, duration, season, patch, id, blue, red, summoner, side):
         self.duration = duration
         self.season = season
@@ -14,21 +14,21 @@ class Match():
 
     def to_dict(self):
         return {
-            'duration' : self.duration,
-            'season' : self.season,
-            'patch' : self.patch,
-            'id' : self.id,
-            'blue' : self.blue,
-            'red' : self.red,
-            'summoner' : self.summoner,
-            'side' : self.side
+            'duration': self.duration,
+            'season': self.season,
+            'patch': self.patch,
+            'id': self.id,
+            'blue': self.blue,
+            'red': self.red,
+            'summoner': self.summoner,
+            'side': self.side
         }
 
     def winning_side(self):
         return self.side if self.summoner.stats.win else not self.side
 
 
-class Summoner():
+class Summoner:
     def __init__(self, summoner_spell_d, summoner_spell_f, runes, stats, champion):
         self.summoner_spell_d = summoner_spell_d
         self.summoner_spell_f = summoner_spell_f
@@ -36,14 +36,14 @@ class Summoner():
         self.stats = stats
         self.champion = champion
 
-
     def __str__(self):
-        return f'\tsummoner_spell_d: {self.summoner_spell_d}\n\tsummoner_spell_f: {self.summoner_spell_f}\n\trunes: {self.runes}\n\tstats: {self.stats}\n'
+        return f'summoner_spell_d: {self.summoner_spell_d}\nsummoner_spell_f: {self.summoner_spell_f}\nrunes: {self.runes}\nstats: {self.stats}\nchampion: {self.champion}\n'
 
     def __repr__(self):
-        return f'\tsummoner_spell_d: {self.summoner_spell_d}\n\tsummoner_spell_f: {self.summoner_spell_f}\n\trunes: {self.runes}\n\tstats: {self.stats}\n'
+        return self.__str__()
 
-class Stats():
+
+class Stats:
     def __init__(self, stats):
         self.assists = stats.assists
         self.combat_player_score = stats.combat_player_score
