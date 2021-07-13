@@ -1,23 +1,25 @@
 class Match:
-    def __init__(self, duration, season, patch, id, blue, red, summoner, side):
+    def __init__(self, duration, patch, id, creation, surrender, blue, red, summoner, side):
         self.duration = duration
-        self.season = season
         self.patch = patch
         self.id = id
+        self.creation = creation
+        self.surrender = surrender
         self.blue = blue
         self.red = red
         self.summoner = summoner
         self.side = side
 
     def __str__(self):
-        return f'duration: {self.duration}\nseason: {self.season}\npatch: {self.patch}\nid: {self.id}\nblue: {self.blue}\nred: {self.red}\nside: {self.side}\nsummoner: \n{self.summoner}\n'
+        return f'duration: {self.duration}\npatch: {self.patch}\nid: {self.id}\ncreation: {self.creation}\nsurrender: {self.surrender}\nblue: {self.blue}\nred: {self.red}\nside: {self.side}\nsummoner: \n{self.summoner}\n'
 
     def to_dict(self):
         return {
             'duration': self.duration,
-            'season': self.season,
             'patch': self.patch,
             'id': self.id,
+            'creation': self.creation,
+            'surrender': self.surrender,
             'blue': self.blue,
             'red': self.red,
             'summoner': self.summoner,
@@ -102,3 +104,8 @@ class Stats:
         self.true_damage_taken = stats.true_damage_taken
         self.turret_kills = stats.turret_kills
         self.win = stats.win
+
+
+from collections import namedtuple
+
+Player = namedtuple('Player', ['name', 'champ'])

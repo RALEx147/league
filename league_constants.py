@@ -10,4 +10,4 @@ chris = "Big Benis Boy"
 aleks = "Dodge Down"
 zeb = "Derroz"
 
-friends = {thomas, adrian, danial, JJ, nick, chris, aleks, zeb }
+friends = {thomas, adrian, danial, JJ, nick, chris, aleks, zeb}
