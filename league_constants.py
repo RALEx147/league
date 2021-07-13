@@ -9,5 +9,7 @@ nick = "Mizero1"
 chris = "Big Benis Boy"
 aleks = "Dodge Down"
 zeb = "Derroz"
+mo = "phill or pheed"
+danny = "rdinho9"
 
-friends = {thomas, adrian, danial, JJ, nick, chris, aleks, zeb}
+friends = {thomas, adrian, danial, JJ, nick, chris, aleks, zeb, mo, danny}
