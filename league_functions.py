@@ -4,6 +4,7 @@ from league_constants import adcs
 
 
 def wr(dataframe):
+    if len(dataframe) == 0: return
     wr = dataframe.win.value_counts(normalize=True).sort_index(ascending=False).rename(
         {True: "Win", False: "Loss"}).mul(100).round(1).astype(str) + '%'
     wr["Win"] = wr["Win"] + " " + str(dataframe.win.value_counts().sort_index(ascending=False)[True])
