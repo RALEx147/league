@@ -1,126 +1,114 @@
-from collections import defaultdict
-import numpy as np
-from league_constants import adcs
+import pandas as pd
+import plotly.express as px
+
+def role_distribution(dataframe, champs):
+    dataframe["role"] = dataframe.champ.apply(lambda x: champs[x])
+    wr = round(dataframe[dataframe.win == True].groupby("role").win.count() / \
+               dataframe.groupby("role").win.count() * 100, 2)
+
+    chart = px.pie(dataframe.groupby("role").count().reset_index(), values="win", names="role")
+    return wr, chart
+
+def game_in_timeframe(dataframe, timeframe="Day"):
+    if timeframe == "Day":
+        dataframe["date"] = dataframe.creation.apply(lambda x: x.date())
+    elif timeframe == "Month":
+        dataframe["date"] =  dataframe.creation.apply(lambda x: (x.month, x.year))
+    else:
+        return
+    games_in_day = dataframe.groupby("date").duration.agg(['sum','count']).sort_values("sum", ascending=False).head(10)
+    games_in_day["sum"] = games_in_day["sum"].apply(lambda x:str(int(x//3600)) + "h " + str(int(x%3600//60))+"m")
+    return games_in_day.head(3)
+
+
+
+
+def games_in_days(dataframe, days=1):
+    from datetime import timedelta
+    start = 0
+    end = 1
+    max_games = 0
+    result = (0, 0)
+
+    for i in range(1, len(dataframe)):
+        first = dataframe.creation.iloc[start]
+        next = dataframe.creation.iloc[i]
+
+        if first - next < timedelta(days):
+            end += 1
+        else:
+            while dataframe.creation.iloc[start] - next > timedelta(days):
+                start += 1
+            end += 1
+
+        if end - start > max_games:
+            max_games = end - start
+            result = (start, end)
+
+    start = dataframe.iloc[result[0]]
+    end = dataframe.iloc[result[1] - 1]
+    diff = start.creation - end.creation
+
+    print(max_games - 1, f"games in range of {diff} on {dataframe.iloc[result[0]].creation.strftime('%m-%d-%Y')}")
+    return result
+
+
+def max_kills(dataframe, games=5):
+    dataframe["kills"] = dataframe.summoner.apply(lambda x: x.stats.kills)
+    return dataframe.sort_values(by="kills", ascending=False).drop(["teamnames", "teamcomp", "enemynames", "enemycomp"],
+                                                                   axis=1).head(games)
+
+
+def max_kills_permin(dataframe, games=5):
+    dataframe["kills"] = dataframe.summoner.apply(lambda x: x.stats.kills)
+    dataframe["kpm"] = dataframe.kills / dataframe.duration * 60
+    return dataframe.sort_values(by="kpm", ascending=False).drop(["teamnames", "teamcomp", "enemynames", "enemycomp"],
+                                                                 axis=1).head(games)
+
+
+def sums_count(dataframe):
+    d = dataframe.summoner.apply(lambda x: x.summoner_spell_d)
+    f = dataframe.summoner.apply(lambda x: x.summoner_spell_f)
+    return d.append(f).value_counts()
+
+
+def item_count(dataframe, item_id_to_name, show=5):
+    items = dataframe.summoner.apply(lambda x: [i.id for i in x.stats.items if i])
+    return pd.Series([i for sublist in items for i in sublist]).value_counts().rename(item_id_to_name).drop(
+        "Poro-Snax").head(show)
+
+
+
+
 
 
 def wr(dataframe):
-    if len(dataframe) == 0: return
     wr = dataframe.win.value_counts(normalize=True).sort_index(ascending=False).rename(
         {True: "Win", False: "Loss"}).mul(100).round(1).astype(str) + '%'
-    wr["Win"] = wr["Win"] + " " + str(dataframe.win.value_counts().sort_index(ascending=False)[True])
-    wr["Loss"] = wr["Loss"] + " " + str(dataframe.win.value_counts().sort_index(ascending=False)[False])
+    if "Win" in wr:
+        wr["Win"] = wr["Win"] + " " + str(dataframe.win.value_counts().sort_index(ascending=False)[True])
+    else:
+        temp = wr["Loss"]
+        del wr["Loss"]
+        wr["Win"] = "0.0% 0"
+        wr["Loss"] = temp
+
+    if "Loss" in wr:
+        wr["Loss"] = wr["Loss"] + " " + str(dataframe.win.value_counts().sort_index(ascending=False)[False])
+    else:
+        wr["Loss"] = "0.0% 0"
+
     return wr
 
 
+def wl(dataframe, filter=3):
+    wl = pd.DataFrame()
 
-def pretty(d, length, addendum=None):
-    for _, (key, value) in enumerate(d):
-        space = " " * (length - len(key))
-        if addendum:
-            print(key, space, value, addendum[key])
-        else:
-            print(key, space, value)
+    wl["wins"] = dataframe[dataframe.win == True].summoner.apply(lambda x: x.champion).value_counts()
+    wl["losses"] = dataframe[dataframe.win == False].summoner.apply(lambda x: x.champion).value_counts()
+    wl["losses"].fillna(value=0, inplace=True)
+    wl["total"] = wl.losses + wl.wins
+    wl["wr"] = round(wl.wins / wl.total, 2) * 100
 
+    return wl[wl.total >= filter].sort_values(by=["wr", "total"], ascending=False)
 
-def percent(wins, losses):
-    if (wins + losses) == 0:
-        return -1
-    return round(100 * wins / (wins + losses), 2)
-
-
-def win_rate(data):
-    d = defaultdict(int)
-    for i in data:
-        d[i.summoner.stats.win] += 1
-    wins = d[True]
-    losses = d[False]
-    print(f'Wins: {wins}\nLosses: {losses}\n{percent(wins, losses)}%')
-    return wins, losses
-
-
-def champ_winrate(data):
-    d = defaultdict(lambda: [0, 0])
-    percentages = {}
-    for i in data:
-        d[i.summoner.champion][0] += 1 if i.summoner.stats.win else 0
-        d[i.summoner.champion][1] += 0 if i.summoner.stats.win else 1
-    for key in d.keys():
-        percentages[key] = str(percent(d[key][0], d[key][1])) + "%"
-
-    pretty(sorted(d.items(), key=lambda item: item[1][0] + item[1][1], reverse=True), 15, addendum=percentages)
-
-
-# def champ_kda(name, data):
-# def kda(data):
-# def kp(data):
-# def common_teammates(data, lookup=None):
-# def multikills(data):
-# def items(data):
-def adc_winrate(data):
-    with_adc_wins = 0
-    with_adc_losses = 0
-    no_adc_wins = 0
-    no_adc_losses = 0
-    for i in data:
-        blue = {i.champ for i in i.blue}
-        red = {i.champ for i in i.red}
-        personal = red if i.side else blue
-        other = blue if i.side else red
-
-        win = i.winning_side()
-        if adcs & personal and not adcs & other:
-            if win == i.side:
-                with_adc_wins += 1
-            else:
-                with_adc_losses += 1
-        if not adcs & personal and adcs & other:
-            if win == i.side:
-                no_adc_wins += 1
-            else:
-                no_adc_losses += 1
-
-    print(
-        f'With adc winrate: {percent(with_adc_wins, with_adc_losses)}%\nNo adc winrate: {percent(no_adc_wins, no_adc_losses)}%\n')
-
-
-# def time_played(data):
-# def win_rate_with(name, data):
-def time_distribution(name, data):
-    winlength = defaultdict(int)
-    loselength = defaultdict(int)
-
-    win_times = []
-    loss_times = []
-    for i in data:
-        if name in i.team_names[0]:
-            t = int(i.time / 60)
-            if i.win:
-                winlength[t] += 1
-                win_times.append(i.time)
-            else:
-                loselength[t] += 1
-                loss_times.append(i.time)
-
-    wins = sorted(winlength.items(), key=lambda item: item[0])
-    loss = sorted(loselength.items(), key=lambda item: item[0])
-
-    print("Wins")
-    for i, val in enumerate(wins):
-        print(str(val[0]) + "*" * val[1])
-    print('-------------------------------')
-
-    print("Losses")
-    for i, val in enumerate(loss):
-        print(str(val[0]) + "*" * val[1])
-
-    win_mean = sum(win_times) / len(win_times)
-    loss_mean = sum(loss_times) / len(loss_times)
-    total_count = len(win_times) + len(loss_times)
-    total_time = win_times + loss_times
-    print("Average Win Time ", win_mean / 60)
-    print("Average Loss Time ", loss_mean / 60)
-    print("Average Time", sum(total_time) / 60 / total_count)
-    print("Win Standerd Deviation", (np.std(win_times)) / 60)
-    print("Loss Standerd Deviation", (np.std(loss_times)) / 60)
-    print("Standerd Deviation", (np.std(win_times + loss_times)) / 60)
-    print()

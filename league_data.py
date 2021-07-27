@@ -8,10 +8,6 @@ import pandas as pd
 import credential
 
 
-def filter_data(data):
-    return data
-
-
 def _convert_df(data):
     return pd.DataFrame([vars(d) for d in data])
 
@@ -82,27 +78,20 @@ def _fetch_new_data(read, matches, name):
                         stats = i.stats
                     main_summoner = Summoner(summoner_spell_d, summoner_spell_f, runes, stats, champion)
 
-            surrender = ((match.blue_team.win and match.blue_team.tower_kills != 4) or (match.blue_team.win and match.red_team.tower_kills != 4))
+            surrender = ((match.blue_team.win and match.blue_team.tower_kills != 4) or (match.red_team.win and match.red_team.tower_kills != 4))
             game = Match(match.duration, match.patch, match.id, match.creation, surrender, blue, red, main_summoner, side)
             new_matches.append(game)
             read.add(match.id)
             count += 1
 
         print("DATA ADDED", count, '\n')
-        print(len(matches))
         matches = pd.concat([matches, _convert_df(new_matches)])
-        print(len(matches))
         pd.to_pickle(matches, filepath_or_buffer=str("cache/data_" + name.lower().replace(" ", "_") + ".pickle"))
         dill.dump(read, file=open("cache/read_" + name.lower().replace(" ", "_") + ".pickle", "wb"))
     else:
         print("NO DATA ADDED\n")
     return matches
-#
+
 # cass.set_riot_api_key(credential.get_key())
 # s = cass.get_summoner(name="Dirty Doughnut", region="NA")
 # match_history = cass.get_match_history(summoner=s, queues=[cass.Queue.aram])
-#
-# t=9
-#
-# print(match_history[t].blue_team.tower_kills)
-# print(match_history[t].red_team.tower_kills)

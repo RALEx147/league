@@ -12,4 +12,4 @@ zeb = "Derroz"
 mo = "phill or pheed"
 danny = "rdinho9"
 
-friends = {thomas, adrian, danial, JJ, nick, chris, aleks, zeb, mo, danny}
+friends = {robb, thomas, adrian, danial, JJ, nick, chris, aleks, zeb, mo, danny}
