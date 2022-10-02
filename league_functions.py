@@ -1,13 +1,48 @@
 import pandas as pd
 import plotly.express as px
+import cassiopeia as cass
 
-def role_distribution(dataframe, champs):
-    dataframe["role"] = dataframe.champ.apply(lambda x: champs[x])
-    wr = round(dataframe[dataframe.win == True].groupby("role").win.count() / \
-               dataframe.groupby("role").win.count() * 100, 2)
 
-    chart = px.pie(dataframe.groupby("role").count().reset_index(), values="win", names="role")
-    return wr, chart
+def percent(num, denom):
+    return str(round(len(num) / len(denom) * 100, 2))
+
+
+def get_id_mappings():
+    ver = cass.get_version(region="NA")
+    item_id_to_name = {item.id: item.name for item in cass.core.staticdata.Items(region="NA", version=ver)}
+    champ_id_to_name = {champ.id: champ.name for champ in cass.core.staticdata.Champions(region="NA", version=ver)}
+    champ_name_to_id = {champ.name: champ.id for champ in cass.core.staticdata.Champions(region="NA", version=ver)}
+    return item_id_to_name, champ_id_to_name, champ_name_to_id
+
+
+def get_champ_roles():
+    champs = pd.Series(cass.get_champions(region="NA"))
+    champs.index = champs.apply(lambda x: x.name)
+    champs = champs.apply(lambda x: x.tags[0])
+    champs["Teemo"] = "Mage"
+    champs["Graves"] = "Fighter"
+    champs["Kayle"] = "Marksman"
+    champs["Dr. Mundo"] = "Tank"
+
+    adc = set(champs[champs.apply(lambda x: "Marksman" in x)].index)
+    assassin = set(champs[champs.apply(lambda x: "Assassin" in x)].index)
+    fighter = set(champs[champs.apply(lambda x: "Fighter" in x)].index)
+    support = set(champs[champs.apply(lambda x: "Support" in x)].index)
+    tank = set(champs[champs.apply(lambda x: "Tank" in x)].index)
+    mage = set(champs[champs.apply(lambda x: "Mage" in x)].index)
+
+    return champs, adc, assassin, fighter, support, tank, mage
+
+
+def role_distribution(dataframe, champs, map):
+    dataframe["role"] = dataframe.championId.apply(lambda x: champs[map[x]])
+    wr = round(dataframe[dataframe.win == True].groupby("role").win.count() /
+               dataframe.groupby("role").win.count() * 100, 2).apply(lambda x: str(x) + "%")
+
+    count = dataframe.groupby("role").count().reset_index()
+    sum = dataframe.groupby("role").sum().reset_index()
+    avg = dataframe.groupby("role").mean().reset_index()
+    return wr, count, sum, avg
 
 def game_in_timeframe(dataframe, timeframe="Day"):
     if timeframe == "Day":
@@ -73,8 +108,7 @@ def sums_count(dataframe):
 
 
 def item_count(dataframe, item_id_to_name, show=5):
-    items = dataframe.summoner.apply(lambda x: [i.id for i in x.stats.items if i])
-    return pd.Series([i for sublist in items for i in sublist]).value_counts().rename(item_id_to_name).drop(
+    return pd.Series([i for sublist in dataframe["items"] for i in sublist]).value_counts().rename(item_id_to_name).drop(
         "Poro-Snax").head(show)
 
 
@@ -82,32 +116,34 @@ def item_count(dataframe, item_id_to_name, show=5):
 
 
 
-def wr(dataframe):
+def wr(dataframe, just_win=True):
+    count = dataframe.win.value_counts()
     wr = dataframe.win.value_counts(normalize=True).sort_index(ascending=False).rename(
         {True: "Win", False: "Loss"}).mul(100).round(1).astype(str) + '%'
-    if "Win" in wr:
-        wr["Win"] = wr["Win"] + " " + str(dataframe.win.value_counts().sort_index(ascending=False)[True])
-    else:
-        temp = wr["Loss"]
-        del wr["Loss"]
-        wr["Win"] = "0.0% 0"
-        wr["Loss"] = temp
 
-    if "Loss" in wr:
-        wr["Loss"] = wr["Loss"] + " " + str(dataframe.win.value_counts().sort_index(ascending=False)[False])
-    else:
-        wr["Loss"] = "0.0% 0"
+    if "Win" not in wr:
+        wr = wr.append(pd.Series(["0.0%"], index=["Win"]))
+    if "Loss" not in wr:
+        wr = wr.append(pd.Series(["0.0%"], index=["Loss"]))
 
+    wr.sort_index(ascending=False, inplace=True)
+    wr["Win"] = wr["Win"] + " " + str(count[True] if True in count else 0)
+    wr["Loss"] = wr["Loss"] + " " + str(count[False] if False in count else 0)
+    if just_win:
+        return wr["Win"]
     return wr
 
 
 def wl(dataframe, filter=3):
-    wl = pd.DataFrame()
 
-    wl["wins"] = dataframe[dataframe.win == True].summoner.apply(lambda x: x.champion).value_counts()
-    wl["losses"] = dataframe[dataframe.win == False].summoner.apply(lambda x: x.champion).value_counts()
-    wl["losses"].fillna(value=0, inplace=True)
-    wl["total"] = wl.losses + wl.wins
+    w = dataframe[dataframe.win == True].championId.value_counts()
+    l = dataframe[dataframe.win == False].championId.value_counts()
+    wl = pd.concat([w, l], axis=1)
+    wl.columns = ['wins', 'losses']
+    wl.fillna(value=0, inplace=True)
+    wl["total"] = wl.wins + wl.losses
+    wl = wl.astype(int)
+    wl = wl.drop('losses', axis=1)
     wl["wr"] = round(wl.wins / wl.total, 2) * 100
 
     return wl[wl.total >= filter].sort_values(by=["wr", "total"], ascending=False)
