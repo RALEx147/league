@@ -106,37 +106,42 @@ def get_matches(ids, summoner):
         participants = match_data["metadata"]["participants"]
         match = match_data["info"]
         player_index = participants.index(summoner['puuid'])
-        player_info = match["participants"][player_index]
-        side = player_info["teamId"]
+        try:
+            player_info = match["participants"][player_index]
+            side = player_info["teamId"]
 
-        team = []
-        champs = []
-        other_team = []
-        other_champs = []
-        for j in match["participants"]:
-            if j["teamId"] == side:
-                team.append(j["puuid"])
-                champs.append(j["championId"])
-            else:
-                other_team.append(j["puuid"])
-                other_champs.append(j["championId"])
+            team = []
+            champs = []
+            other_team = []
+            other_champs = []
+            for j in match["participants"]:
+                if j["teamId"] == side:
+                    team.append(j["puuid"])
+                    champs.append(j["championId"])
+                else:
+                    other_team.append(j["puuid"])
+                    other_champs.append(j["championId"])
 
-            summoners[j["puuid"]].add(j["summonerName"])
+                summoners[j["puuid"]].add(j["summonerName"])
 
-        match["participants"] = match["participants"][player_index]
-        runes = player_info["perks"]
-        del match["teams"]
-        del match["participants"]["perks"]
-        if "gameEndTimestamp" in match:
-            del match["gameEndTimestamp"]
-        flattened = flatten_data(match)
-        flattened["perks"] = runes
-        flattened["team"] = team
-        flattened["champs"] = champs
-        flattened["other_team"] = other_team
-        flattened["other_champs"] = other_champs
+            match["participants"] = match["participants"][player_index]
+            runes = player_info["perks"]
+            del match["teams"]
+            del match["participants"]["perks"]
+            if "gameEndTimestamp" in match:
+                del match["gameEndTimestamp"]
+            flattened = flatten_data(match)
+            flattened["perks"] = runes
+            flattened["team"] = team
+            flattened["champs"] = champs
+            flattened["other_team"] = other_team
+            flattened["other_champs"] = other_champs
 
-        matches.append(flattened)
+            matches.append(flattened)
+        except:
+            print(match_data)
+            print(match["participants"])
+            print("failed to get player info")
 
     df = pd.read_json(json.dumps(matches))
     df.drop(dropped, axis=1, inplace=True, errors='ignore')
@@ -152,8 +157,6 @@ def get_matches(ids, summoner):
 
 
 def load_legacy_data(name):
-
     aram_data = pd.read_pickle("aram_data/raw_old/data_" + name.lower().replace(" ", "_") + ".pickle")
     print("LEGACY DATA LOADED", len(aram_data))
     return aram_data
-
