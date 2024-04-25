@@ -122,7 +122,7 @@ def get_matches(ids, summoner):
                     other_team.append(j["puuid"])
                     other_champs.append(j["championId"])
 
-                summoners[j["puuid"]].add(j["summonerName"])
+                summoners[j["puuid"]].add(j["riotIdGameName"])
 
             match["participants"] = match["participants"][player_index]
             runes = player_info["perks"]
@@ -139,24 +139,32 @@ def get_matches(ids, summoner):
 
             matches.append(flattened)
         except:
-            print(match_data)
-            print(match["participants"])
             print("failed to get player info")
 
     df = pd.read_json(json.dumps(matches))
     df.drop(dropped, axis=1, inplace=True, errors='ignore')
-    df.gameStartTimestamp = pd.to_datetime(df.gameStartTimestamp, unit='ms')
-    df.gameStartTimestamp = df.gameStartTimestamp.dt.tz_localize('UTC').dt.tz_convert('US/Pacific')
-    df.gameDuration = df.gameDuration.apply(lambda x: int(x / 1000) if x > 3600 else x)
+    try:
+        df.gameStartTimestamp = pd.to_datetime(df.gameStartTimestamp, unit='ms')
+        df.gameStartTimestamp = df.gameStartTimestamp.dt.tz_localize('UTC').dt.tz_convert('US/Pacific')
+        df.gameDuration = df.gameDuration.apply(lambda x: int(x / 1000) if x > 3600 else x)
+    except:
+        print("NO TIMESTAMP, BUGGED GAME")
     return df, summoners
-
-
-"""
-    Test
-"""
 
 
 def load_legacy_data(name):
     aram_data = pd.read_pickle("aram_data/raw_old/data_" + name.lower().replace(" ", "_") + ".pickle")
     print("LEGACY DATA LOADED", len(aram_data))
     return aram_data
+
+
+"""
+    Test
+"""
+# me = lol_watcher.summoner.by_name('na1', "Dirty Doughnut")
+# #
+# ids = get_match_ids(me)
+# print(type(ids))
+# print(type(ids[0]))
+# print(ids[0])
+# get_matches([ids[0]], me)
